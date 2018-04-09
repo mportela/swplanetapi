@@ -114,6 +114,17 @@ class SWAPITestCase(unittest.TestCase):
                    'terreno': 'acidentado'}
         self.assertEqual(ret['result'], exp_ret)
 
+    def test_get_one_by_name_not_found(self):
+        with self.ac.app_context():
+            planet = self.mongo.db.planets
+            ins_1 = planet.insert_one({'nome': 'teste_planeta',
+                                       'terreno': 'acidentado',
+                                       'clima': 'frio', 'filmes': 0})
+            planet_1 = ins_1.inserted_id
+
+        ret = self.app.get('/planet/name/teste_planeta 2')
+        self.assertEqual(ret.status_code, 404)
+
     def tearDown(self):
         self._clear_data()
 

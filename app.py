@@ -55,7 +55,7 @@ def get_one_planet_by_name(planet_name):
 
 
 @app.route('/planet', methods=['POST'])
-def add_star():
+def add_planet():
     planet = mongo.db.planets
     planet_data = {
         "nome": request.json['nome'],
