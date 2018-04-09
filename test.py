@@ -138,6 +138,7 @@ class SWAPITestCase(unittest.TestCase):
         self.assertEqual(ret['result']['nome'], 'novo planeta')
         self.assertEqual(ret['result']['terreno'], 'árido')
         self.assertEqual(ret['result']['clima'], 'temperado')
+        self.assertTrue('_id' in ret['result'])
 
     def test_post_planet_already_exists(self):
         with self.ac.app_context():
@@ -157,6 +158,30 @@ class SWAPITestCase(unittest.TestCase):
         self.assertEqual(
                 ret.data,
                 'O Planeta [teste_planeta] já existe'.encode('utf-8'))
+
+    def test_delete_planet(self):
+        with self.ac.app_context():
+            planet = self.mongo.db.planets
+            ins_1 = planet.insert_one({'nome': 'teste_planeta',
+                                       'terreno': 'acidentado',
+                                       'clima': 'frio', 'filmes': 0})
+            planet_1 = ins_1.inserted_id
+        ret = self.app.delete('/planet/{}'.format(planet_1))
+        self.assertEqual(ret.status_code, 204)
+
+    def test_delete_planet_error(self):
+        with self.ac.app_context():
+            planet = self.mongo.db.planets
+            ins_1 = planet.insert_one({'nome': 'teste_planeta',
+                                       'terreno': 'acidentado',
+                                       'clima': 'frio', 'filmes': 0})
+            planet_1 = ins_1.inserted_id
+        ret = self.app.delete('/planet/1234')
+        self.assertEqual(ret.status_code, 400)
+        e_msg = "Erro deletando o planeta solicitado [1234] - '1234' is"\
+                " not a valid ObjectId, it must be a 12-byte input or a"\
+                " 24-character hex string".encode('utf-8')
+        self.assertEqual(ret.data, e_msg)
 
     def tearDown(self):
         self._clear_data()
