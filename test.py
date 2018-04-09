@@ -68,11 +68,11 @@ class SWAPITestCase(unittest.TestCase):
 
         ret = self.app.get('/planet/{}'.format(str(planet_1)))
         ret = json.loads(ret.data)
-        exp_ret ={'_id': str(planet_1),
-                  'clima': 'frio',
-                  'filmes': 0,
-                  'nome': 'teste1',
-                  'terreno': 'acidentado'}
+        exp_ret = {'_id': str(planet_1),
+                   'clima': 'frio',
+                   'filmes': 0,
+                   'nome': 'teste1',
+                   'terreno': 'acidentado'}
         self.assertEqual(ret['result'], exp_ret)
 
     def test_get_one_by_id_not_found(self):
@@ -94,7 +94,25 @@ class SWAPITestCase(unittest.TestCase):
 
         ret = self.app.get('/planet/blah')
         self.assertEqual(ret.status_code, 400)
-        self.assertEqual(ret.data, '_id passado [blah] inválido'.encode('utf-8'))
+        self.assertEqual(
+                ret.data, '_id passado [blah] inválido'.encode('utf-8'))
+
+    def test_get_one_by_name(self):
+        with self.ac.app_context():
+            planet = self.mongo.db.planets
+            ins_1 = planet.insert_one({'nome': 'teste planetá',
+                                       'terreno': 'acidentado',
+                                       'clima': 'frio', 'filmes': 0})
+            planet_1 = ins_1.inserted_id
+
+        ret = self.app.get('/planet/name/teste planetá')
+        ret = json.loads(ret.data)
+        exp_ret = {'_id': str(planet_1),
+                   'clima': 'frio',
+                   'filmes': 0,
+                   'nome': 'teste planetá',
+                   'terreno': 'acidentado'}
+        self.assertEqual(ret['result'], exp_ret)
 
     def tearDown(self):
         self._clear_data()
