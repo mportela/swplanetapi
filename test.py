@@ -15,7 +15,7 @@ class SWAPITestCase(unittest.TestCase):
 
     def test_get_empty_db(self):
         ret = self.app.get('/planet')
-        ret=json.loads(ret.data)
+        ret = json.loads(ret.data)
         self.assertEqual(ret['result'], [])
 
 if __name__ == '__main__':
