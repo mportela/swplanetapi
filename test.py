@@ -125,6 +125,39 @@ class SWAPITestCase(unittest.TestCase):
         ret = self.app.get('/planet/name/teste_planeta 2')
         self.assertEqual(ret.status_code, 404)
 
+    def test_post_planet(self):
+        data = {
+            'clima': 'temperado',
+            'nome': 'novo planeta',
+            'terreno': 'árido'
+        }
+        ret = self.app.post('/planet', data=json.dumps(data),
+                            content_type='application/json')
+        self.assertEqual(ret.status_code, 200)
+        ret = json.loads(ret.data)
+        self.assertEqual(ret['result']['nome'], 'novo planeta')
+        self.assertEqual(ret['result']['terreno'], 'árido')
+        self.assertEqual(ret['result']['clima'], 'temperado')
+
+    def test_post_planet_already_exists(self):
+        with self.ac.app_context():
+            planet = self.mongo.db.planets
+            ins_1 = planet.insert_one({'nome': 'teste_planeta',
+                                       'terreno': 'acidentado',
+                                       'clima': 'frio', 'filmes': 0})
+            planet_1 = ins_1.inserted_id
+        data = {
+            'clima': 'temperado',
+            'nome': 'teste_planeta',
+            'terreno': 'árido'
+        }
+        ret = self.app.post('/planet', data=json.dumps(data),
+                            content_type='application/json')
+        self.assertEqual(ret.status_code, 400)
+        self.assertEqual(
+                ret.data,
+                'O Planeta [teste_planeta] já existe'.encode('utf-8'))
+
     def tearDown(self):
         self._clear_data()
 
