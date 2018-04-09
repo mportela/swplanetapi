@@ -27,6 +27,7 @@ class SWAPITestCase(unittest.TestCase):
         ret = self.app.get('/planet')
         ret = json.loads(ret.data)
         self.assertEqual(ret['result'], [])
+        self.assertEqual(ret['total'], 0)
 
     def test_get_all(self):
         with self.ac.app_context():
@@ -53,6 +54,7 @@ class SWAPITestCase(unittest.TestCase):
                  'terreno': 'liso'}
         ]
         self.assertEqual(ret['result'], exp_ret)
+        self.assertEqual(ret['total'], 2)
 
     def tearDown(self):
         self._clear_data()

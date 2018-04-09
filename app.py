@@ -21,7 +21,7 @@ def get_all_planets():
         output.append({'_id': str(p['_id']), 'nome': p['nome'],
                        'clima': p['clima'], 'terreno': p['terreno'],
                        'filmes': p['filmes']})
-    return jsonify({'result': output})
+    return jsonify({'result': output, 'total': len(output)})
 
 
 @app.route('/planet/<planet_id>', methods=['GET'])
