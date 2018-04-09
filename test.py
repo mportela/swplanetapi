@@ -85,6 +85,17 @@ class SWAPITestCase(unittest.TestCase):
         ret = self.app.get('/planet/5acbf0ed8a8b3800013017ff')
         self.assertEqual(ret.status_code, 404)
 
+    def test_get_one_by_id_invalid(self):
+        with self.ac.app_context():
+            planet = self.mongo.db.planets
+            ins_1 = planet.insert_one({'nome': 'teste1',
+                                       'terreno': 'acidentado',
+                                       'clima': 'frio', 'filmes': 0})
+
+        ret = self.app.get('/planet/blah')
+        self.assertEqual(ret.status_code, 400)
+        self.assertEqual(ret.data, '_id passado [blah] inválido'.encode('utf-8'))
+
     def tearDown(self):
         self._clear_data()
 
