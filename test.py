@@ -32,12 +32,14 @@ class SWAPITestCase(unittest.TestCase):
     def test_get_all(self):
         with self.ac.app_context():
             planet = self.mongo.db.planets
-            planet_1 = planet.insert({'nome': 'teste1',
-                                      'terreno': 'acidentado',
-                                      'clima': 'frio', 'filmes': 0})
-            planet_2 = planet.insert({'nome': 'teste planeta espécial',
-                                      'terreno': 'liso',
-                                      'clima': 'quente', 'filmes': 0})
+            ins_1 = planet.insert_one({'nome': 'teste1',
+                                       'terreno': 'acidentado',
+                                       'clima': 'frio', 'filmes': 0})
+            planet_1 = ins_1.inserted_id
+            ins_2 = planet.insert_one({'nome': 'teste planeta espécial',
+                                       'terreno': 'liso',
+                                       'clima': 'quente', 'filmes': 0})
+            planet_2 = ins_2.inserted_id
 
         ret = self.app.get('/planet')
         ret = json.loads(ret.data)
@@ -55,6 +57,33 @@ class SWAPITestCase(unittest.TestCase):
         ]
         self.assertEqual(ret['result'], exp_ret)
         self.assertEqual(ret['total'], 2)
+
+    def test_get_one_by_id_ok(self):
+        with self.ac.app_context():
+            planet = self.mongo.db.planets
+            ins_1 = planet.insert_one({'nome': 'teste1',
+                                       'terreno': 'acidentado',
+                                       'clima': 'frio', 'filmes': 0})
+            planet_1 = ins_1.inserted_id
+
+        ret = self.app.get('/planet/{}'.format(str(planet_1)))
+        ret = json.loads(ret.data)
+        exp_ret ={'_id': str(planet_1),
+                  'clima': 'frio',
+                  'filmes': 0,
+                  'nome': 'teste1',
+                  'terreno': 'acidentado'}
+        self.assertEqual(ret['result'], exp_ret)
+
+    def test_get_one_by_id_not_found(self):
+        with self.ac.app_context():
+            planet = self.mongo.db.planets
+            ins_1 = planet.insert_one({'nome': 'teste1',
+                                       'terreno': 'acidentado',
+                                       'clima': 'frio', 'filmes': 0})
+
+        ret = self.app.get('/planet/5acbf0ed8a8b3800013017ff')
+        self.assertEqual(ret.status_code, 404)
 
     def tearDown(self):
         self._clear_data()

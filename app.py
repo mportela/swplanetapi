@@ -69,7 +69,8 @@ def add_star():
         msg = 'O Planeta [{}] já existe'.format(planet_data['nome'])
         return (msg, code)
     else:
-        planet_id = planet.insert(planet_data)
+        ins = planet.insert_one(planet_data)
+        planet_id = ins.inserted_id
         new_planet = planet.find_one({'_id': planet_id})
         output = {}
         for item in planet_data:
