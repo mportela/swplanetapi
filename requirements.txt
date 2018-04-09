@@ -1,3 +1,3 @@
-Flask
+Flask==0.12.2
 PyMongo==3.6.*
-Flask-PyMongo
+Flask-PyMongo==0.5.1
