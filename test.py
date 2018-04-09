@@ -14,6 +14,7 @@ class SWAPITestCase(unittest.TestCase):
 
     def setUp(self):
         app.app.config['MONGO_DBNAME'] = 'unittestdb'
+        # meu docker-compose fornece o servico mongodb com nome mongodb
         app.app.config['MONGO_URI'] = 'mongodb://mongodb:27017/unittestdb'
         app.app.testing = True
         if not hasattr(app, 'mongo'):
@@ -30,15 +31,28 @@ class SWAPITestCase(unittest.TestCase):
     def test_get_all(self):
         with self.ac.app_context():
             planet = self.mongo.db.planets
-            planet.insert({'nome': 'teste1', 'terreno': 'acidentado',
-                           'clima': 'frio', 'filmes': 0})
-            planet.insert({'nome': 'teste planeta espécial',
-                           'terreno': 'liso',
-                           'clima': 'quente', 'filmes': 0})
+            planet_1 = planet.insert({'nome': 'teste1',
+                                      'terreno': 'acidentado',
+                                      'clima': 'frio', 'filmes': 0})
+            planet_2 = planet.insert({'nome': 'teste planeta espécial',
+                                      'terreno': 'liso',
+                                      'clima': 'quente', 'filmes': 0})
 
         ret = self.app.get('/planet')
         ret = json.loads(ret.data)
-        print(ret)
+        exp_ret = [
+                {'_id': str(planet_1),
+                 'clima': 'frio',
+                 'filmes': 0,
+                 'nome': 'teste1',
+                 'terreno': 'acidentado'},
+                {'_id': str(planet_2),
+                 'clima': 'quente',
+                 'filmes': 0,
+                 'nome': 'teste planeta espécial',
+                 'terreno': 'liso'}
+        ]
+        self.assertEqual(ret['result'], exp_ret)
 
     def tearDown(self):
         self._clear_data()
