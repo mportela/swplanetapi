@@ -1,7 +1,9 @@
 import json
-import app
 import unittest
+from unittest.mock import patch
 from flask_pymongo import PyMongo
+
+import app
 
 
 class SWAPITestCase(unittest.TestCase):
@@ -22,6 +24,7 @@ class SWAPITestCase(unittest.TestCase):
         self.app = app.app.test_client()
         self.ac = app.app
         self.mongo = app.mongo
+        self.planet_cache = app.planet_cache
 
     def test_get_empty_db(self):
         ret = self.app.get('/planet')
@@ -30,6 +33,7 @@ class SWAPITestCase(unittest.TestCase):
         self.assertEqual(ret['total'], 0)
 
     def test_get_all(self):
+        
         with self.ac.app_context():
             planet = self.mongo.db.planets
             ins_1 = planet.insert_one({'nome': 'teste1',
@@ -41,12 +45,14 @@ class SWAPITestCase(unittest.TestCase):
                                        'clima': 'quente', 'filmes': 0})
             planet_2 = ins_2.inserted_id
 
-        ret = self.app.get('/planet')
+        # este teste simula que o planeta de nome teste1 tem 8 filmes na swapi
+        with patch.dict(self.planet_cache, {'teste1': 8}, clear=True):
+            ret = self.app.get('/planet')
         ret = json.loads(ret.data)
         exp_ret = [
                 {'_id': str(planet_1),
                  'clima': 'frio',
-                 'filmes': 0,
+                 'filmes': 8,
                  'nome': 'teste1',
                  'terreno': 'acidentado'},
                 {'_id': str(planet_2),

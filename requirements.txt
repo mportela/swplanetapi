@@ -1,3 +1,4 @@
 Flask==0.12.2
 PyMongo==3.6.*
 Flask-PyMongo==0.5.1
+swapi==0.1.3

@@ -1,9 +1,10 @@
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 from bson.errors import InvalidId
-from flask import Flask
-from flask import request
-from flask import jsonify
+from flask import Flask, request, jsonify
+import swapi
+from datetime import datetime
+
 
 
 app = Flask('swplanetapi')
@@ -11,6 +12,8 @@ app.config['MONGO_DBNAME'] = 'swapidb'
 # rodando no docker-compose up meu mongodb service se chama mongodb :)
 app.config['MONGO_URI'] = 'mongodb://mongodb:27017/{}'.format(
     app.config['MONGO_DBNAME'])
+
+planet_cache = {}
 
 
 @app.route('/planet', methods=['GET'])
@@ -20,7 +23,8 @@ def get_all_planets():
     for p in planet.find():
         output.append({'_id': str(p['_id']), 'nome': p['nome'],
                        'clima': p['clima'], 'terreno': p['terreno'],
-                       'filmes': p['filmes']})
+                       'filmes': planet_cache.get(p['nome'].lower(), 0)})
+
     return jsonify({'result': output, 'total': len(output)})
 
 
@@ -38,7 +42,7 @@ def get_one_planet_by_id(planet_id):
     if p:
         output = {'_id': str(p['_id']), 'nome': p['nome'],
                   'clima': p['clima'], 'terreno': p['terreno'],
-                  'filmes': p['filmes']}
+                  'filmes': planet_cache.get(p['nome'].lower(), 0)}
         return jsonify({'result': output})
 
 
@@ -50,7 +54,7 @@ def get_one_planet_by_name(planet_name):
     if p:
         output = {'_id': str(p['_id']), 'nome': p['nome'],
                   'clima': p['clima'], 'terreno': p['terreno'],
-                  'filmes': p['filmes']}
+                  'filmes': planet_cache.get(p['nome'].lower(), 0)}
     return jsonify({'result': output})
 
 
@@ -60,8 +64,7 @@ def add_planet():
     planet_data = {
         "nome": request.json['nome'],
         "clima": request.json['clima'],
-        "terreno": request.json['terreno'],
-        "filmes": 0
+        "terreno": request.json['terreno']
     }
     p = planet.find_one({'nome': planet_data['nome']})
     if p:
@@ -76,6 +79,7 @@ def add_planet():
         for item in planet_data:
             output[item] = new_planet[item]
         output['_id'] = str(new_planet['_id'])
+        output['filmes'] = planet_cache.get(planet_data['nome'].lower(), 0)
 
     return jsonify({'result': output})
 
@@ -102,8 +106,7 @@ def edit_planet(planet_id):
     planet_data = {
         "nome": request.json['nome'],
         "clima": request.json['clima'],
-        "terreno": request.json['terreno'],
-        "filmes": 0
+        "terreno": request.json['terreno']
     }
 
     try:
@@ -112,8 +115,7 @@ def edit_planet(planet_id):
                                     '$set': {
                                         'nome': planet_data['nome'],
                                         'clima': planet_data['clima'],
-                                        'terreno': planet_data['terreno'],
-                                        'filmes': planet_data['filmes']
+                                        'terreno': planet_data['terreno']
                                     }
                                 })
         if ret.matched_count < 1:
@@ -124,7 +126,7 @@ def edit_planet(planet_id):
         if p:
             output = {'_id': str(p['_id']), 'nome': p['nome'],
                       'clima': p['clima'], 'terreno': p['terreno'],
-                      'filmes': p['filmes']}
+                      'filmes': planet_cache.get(p['nome'].lower(), 0)}
         return jsonify({'result': output})
 
     except InvalidId as e:
@@ -139,5 +141,23 @@ def edit_planet(planet_id):
 
 
 if __name__ == '__main__':
+
+    # coloquei a consulta a api de planetas e filmes do swapi como um 'cache'
+    # pois a mesma "demora" e degrada meu backend caso consulte a todo momento
+    # esta demorando ate 1 minuto para retornar da API do SW
+    # coloquei no main para não fazer o cache nos testes e sim simular
+    # o ponto negativo é que o backend demora 1 minuto para subir
+    print('Consultando SWAPI, por favor aguarde um minuto... {}'.format(datetime.now()))
+    try:
+        swapi_planets = swapi.get_all('planets')
+        for planet in swapi_planets.iter():
+            films = len(planet.films)
+            planet_cache[planet.name.lower()] = films
+        print('Terminou cache SWAPI {}'.format(datetime.now()))
+    except Exception as e:
+        print('Erro Montando Cache de Planetas e Filmes do SWAPI'
+              ', continuando...')
+
     mongo = PyMongo(app)
-    app.run(host="0.0.0.0", debug=True)
+    print("SWAPI READY!")
+    app.run(host="0.0.0.0")
