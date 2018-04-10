@@ -42,7 +42,7 @@ OK
 ```
 
 - Para rodar o servidor da aplicação local:
-  - Para rodar como daemon execute:
+  - Para rodar como daemon execute (demora até 1 minuto subindo e preparando cache da swapi.co após executar este comando acompanhe o log com o comando seguinte):
   ```
   make run
   ```
