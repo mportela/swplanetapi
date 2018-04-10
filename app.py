@@ -6,7 +6,6 @@ import swapi
 from datetime import datetime
 
 
-
 app = Flask('swplanetapi')
 app.config['MONGO_DBNAME'] = 'swapidb'
 # rodando no docker-compose up meu mongodb service se chama mongodb :)
@@ -147,7 +146,8 @@ if __name__ == '__main__':
     # esta demorando ate 1 minuto para retornar da API do SW
     # coloquei no main para não fazer o cache nos testes e sim simular
     # o ponto negativo é que o backend demora 1 minuto para subir
-    print('Consultando SWAPI, por favor aguarde um minuto... {}'.format(datetime.now()))
+    print('Consultando SWAPI, por favor aguarde um minuto... {}'.format(
+        datetime.now()))
     try:
         swapi_planets = swapi.get_all('planets')
         for planet in swapi_planets.iter():

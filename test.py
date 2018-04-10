@@ -33,7 +33,7 @@ class SWAPITestCase(unittest.TestCase):
         self.assertEqual(ret['total'], 0)
 
     def test_get_all(self):
-        
+
         with self.ac.app_context():
             planet = self.mongo.db.planets
             ins_1 = planet.insert_one({'nome': 'teste1',
