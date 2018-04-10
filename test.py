@@ -183,6 +183,58 @@ class SWAPITestCase(unittest.TestCase):
                 " 24-character hex string".encode('utf-8')
         self.assertEqual(ret.data, e_msg)
 
+    def test_edit_planet(self):
+        with self.ac.app_context():
+            planet = self.mongo.db.planets
+            ins_1 = planet.insert_one({'nome': 'teste_planeta',
+                                       'terreno': 'acidentado',
+                                       'clima': 'frio', 'filmes': 0})
+            planet_1 = ins_1.inserted_id
+        data = {'nome': 'teste_planeta',
+                'terreno': 'acidentado',
+                'clima': 'úmido'}
+        ret = self.app.put('/planet/{}'.format(planet_1),
+                           data=json.dumps(data),
+                           content_type='application/json')
+        self.assertEqual(ret.status_code, 200)
+        ret = json.loads(ret.data)
+        self.assertEqual(ret['result']['clima'], 'úmido')
+
+    def test_edit_planet_invalid_id(self):
+        with self.ac.app_context():
+            planet = self.mongo.db.planets
+            ins_1 = planet.insert_one({'nome': 'teste_planeta',
+                                       'terreno': 'acidentado',
+                                       'clima': 'frio', 'filmes': 0})
+            planet_1 = ins_1.inserted_id
+        data = {'nome': 'teste_planeta',
+                'terreno': 'acidentado',
+                'clima': 'úmido'}
+        ret = self.app.put('/planet/blah',
+                           data=json.dumps(data),
+                           content_type='application/json')
+        self.assertEqual(ret.status_code, 400)
+        self.assertEqual(
+                ret.data, '_id passado [blah] inválido'.encode('utf-8'))
+
+    def test_edit_planet_error(self):
+        with self.ac.app_context():
+            planet = self.mongo.db.planets
+            ins_1 = planet.insert_one({'nome': 'teste_planeta',
+                                       'terreno': 'acidentado',
+                                       'clima': 'frio', 'filmes': 0})
+            planet_1 = ins_1.inserted_id
+        data = {'nome': 'teste_planeta',
+                'terreno': 'acidentado',
+                'clima': 'úmido'}
+        ret = self.app.put('/planet/5acc154f14dac2000cea6eaa',
+                           data=json.dumps(data),
+                           content_type='application/json')
+        self.assertEqual(ret.status_code, 400)
+        exp_msg = 'Erro editando o planeta solicitado '\
+                  '[5acc154f14dac2000cea6eaa] - _id não encontrado'
+        self.assertEqual(ret.data, exp_msg.encode('utf-8'))
+
     def tearDown(self):
         self._clear_data()
 

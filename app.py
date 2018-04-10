@@ -96,6 +96,48 @@ def delete_one_planet_by_id(planet_id):
     return (msg, code)
 
 
+@app.route('/planet/<planet_id>', methods=['PUT'])
+def edit_planet(planet_id):
+    planet = mongo.db.planets
+    planet_data = {
+        "nome": request.json['nome'],
+        "clima": request.json['clima'],
+        "terreno": request.json['terreno'],
+        "filmes": 0
+    }
+
+    try:
+        ret = planet.update_one({'_id': ObjectId(planet_id)},
+                                {
+                                    '$set': {
+                                        'nome': planet_data['nome'],
+                                        'clima': planet_data['clima'],
+                                        'terreno': planet_data['terreno'],
+                                        'filmes': planet_data['filmes']
+                                    }
+                                })
+        if ret.matched_count < 1:
+            raise Exception('_id não encontrado')
+
+        p = planet.find_one({'_id': ObjectId(planet_id)})
+        output = {}
+        if p:
+            output = {'_id': str(p['_id']), 'nome': p['nome'],
+                      'clima': p['clima'], 'terreno': p['terreno'],
+                      'filmes': p['filmes']}
+        return jsonify({'result': output})
+
+    except InvalidId as e:
+        code = 400
+        msg = '_id passado [{}] inválido'.format(planet_id)
+        return (msg, code)
+    except Exception as e:
+        msg = 'Erro editando o planeta solicitado [{}] - {}'.format(
+            planet_id, e)
+        code = 400
+        return (msg, code)
+
+
 if __name__ == '__main__':
     mongo = PyMongo(app)
     app.run(host="0.0.0.0", debug=True)
