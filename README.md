@@ -1,6 +1,6 @@
 # swplanetapi
 
-StawWars API REST de Planetas, que deve retornar a quantidade de filmes do SW que um planeta aparece
+StawWars API REST de Planetas, que deve retornar a quantidade de filmes do SW que um planeta aparece usando a api https://swapi.co/
 
 ## Pré-requisitos
 - makefiles (os comandos descritos usam Makefile, funciona no Linux e Mac, mas pode rodar sem)
