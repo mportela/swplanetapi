@@ -17,6 +17,11 @@ obs.: O projeto foi desenvolvido com Python 3.6 + Flask 0.12 + PyMongo 3.6, por�
 git clone https://github.com/mportela/swplanetapi.git
 ```
 
+Você deve entrar no diretório clonado para rodar os comandos abaixo:
+```
+cd swplanetapi
+```
+
 - Para preparar o ambiente e criar a imagem Docker:
 ```
 make build
@@ -41,38 +46,46 @@ OK
   ```
   make run
   ```
-  - Para rodar 'interativo' execute:
+  - no modo daemon para ver o log e quando a app terminou de subir:
+  ```
+  make weblogs
+  ```
+  - Para parar os containeres iniciados no modo daemon:
+  ```
+  make stop
+  ```
+  - Para rodar no modo 'interativo' (escolher entre este e daemon):
   ```
   docker-compose up
   ```
 
 ## Listagem de todos os planetas
-- enpoint url:		/planet
+- enpoint url:		http://localhost:5000/planet
 - method:		GET
 
 ## Buscar pelo ID do Planeta
-- endpoint url:		/planet/[_id]
+- endpoint url:		http://localhost:5000/planet/[_id]
 - method:		GET
 - [_id]:		atributo "_id" do Planeta para Buscar
 
 ## Buscar pelo NOME do Planeta
-- endpoint url:		/planet/name/[nome do planeta]
+- endpoint url:		http://localhost:5000/planet/name/[nome do planeta]
 - method:		GET
 - [nome do planeta]:	atributo "nome" do Planeta para Busca
 
 ## Criar um novo Planeta
-- endpoint url:		/planet
+- endpoint url:		http://localhost:5000/planet
 - method:		POST
 - content_type:		application/json
 - json data:      formato de exemplo: {"nome": "nome do novo planeta", "terreno": "montanhoso", "clima": "seco"}
 
 ## Remover um Planeta
-- endopint url:		/planet/[_id]
+- endopint url:		http://localhost:5000/planet/[_id]
 - method:		DELETE
 - [_id]:		atributo _id do Planeta para Deletar
 
 ## Editar um novo Planeta
-- endpoint url:		/planet/[_id]
+- endpoint url:		http://localhost:5000/planet/[_id]
 - method:		PUT
 - [_id]:		atributo _id do Planeta para Editar
 - content_type:		application/json
