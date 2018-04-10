@@ -20,9 +20,16 @@ StawWars API REST de Planetas, que deve retornar a quantidade de filmes do SW qu
 - endpoint url:		/planet
 - method:		POST
 - content_type:		application/json
-- json data:            formato de exemplo: {"nome": "nome do novo planeta", "terreno": "montanhoso", "clima": "seco"}
+- json data:      formato de exemplo: {"nome": "nome do novo planeta", "terreno": "montanhoso", "clima": "seco"}
 
 ## Remover um Planeta
 - endopint url:		/planet/[_id]
 - method:		DELETE
 - [_id]:		atributo _id do Planeta para Deletar
+
+## Editar um novo Planeta
+- endpoint url:		/planet/[_id]
+- method:		PUT
+- [_id]:		atributo _id do Planeta para Editar
+- content_type:		application/json
+- json data:      formato de exemplo: {"nome": "nome do novo planeta", "terreno": "montanhoso", "clima": "seco"}
