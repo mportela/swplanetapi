@@ -8,7 +8,7 @@ StawWars API REST de Planetas, que deve retornar a quantidade de filmes do SW qu
 - docker-compose
 https://docs.docker.com/compose/install/
 
-obs.: O projeto foi desenvolvido com Python 3.6 + Flask 0.12 + PyMongo 3.6, porém como usa docker, o método recomendado de instalação descrito aqui no passo do "make build" já vai contruir a máquina com suas dependências sem ter que instalar nada manualmente. E quando subir o ambiente já vai disponível um MondoDB e a URI de acesso já estará configurada.
+obs.: O projeto foi desenvolvido com Python 3.6 + Flask 0.12 + PyMongo 3.6, porém como usa docker, o método recomendado de instalação descrito aqui no passo do "make build" já vai construir a máquina com suas dependências sem ter que instalar nada manualmente. E quando subir o ambiente já vai disponível um MongoDB e a URI de acesso já estará configurada.
 
 
 ## Para rodar a aplicação (depois do Docker e docker-compose instalado)
