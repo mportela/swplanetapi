@@ -1,5 +1,7 @@
 # swplanetapi
 
+[![Build Status](https://travis-ci.org/mportela/swplanetapi.svg?branch=master)](https://travis-ci.org/mportela/swplanetapi)
+
 StawWars API REST de Planetas, que deve retornar a quantidade de filmes do SW que um planeta aparece usando a api https://swapi.co/
 
 ## Pré-requisitos
