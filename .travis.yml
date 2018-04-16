@@ -24,6 +24,6 @@ script:
 deploy:
  provider: script
  skip_cleanup: true
- script: docker login --email=$DOCKER_EMAIL --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD && docker push $DOCKER_USERNAME/swplanetapi:latest
+ script: docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD && docker push $DOCKER_USERNAME/swplanetapi:latest
  on:
    branch: master
