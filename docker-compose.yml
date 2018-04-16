@@ -2,6 +2,7 @@ version: '3'
 services:
   web:
     build: .
+    image: mportela/swplanetapi:latest
     command: python -u app.py
     volumes:
         - .:/app
